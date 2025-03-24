@@ -1,33 +1,30 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig } from 'eslint/config';
+import globals from 'globals';
+import js from '@eslint/js';
+import pluginReact from 'eslint-plugin-react';
 
-export default [
-  { ignores: ['dist'] },
+export default defineConfig([
+  { files: ['**/*.{js,mjs,cjs,jsx}'] },
+  {
+    files: ['**/*.{js,mjs,cjs,jsx}'],
+    languageOptions: { globals: globals.browser },
+  },
+  {
+    files: ['**/*.{js,mjs,cjs,jsx}'],
+    plugins: { js },
+    extends: ['js/recommended'],
+  },
+  pluginReact.configs.flat.recommended,
   {
     files: ['**/*.{js,jsx}'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module',
+    plugins: { react: pluginReact },
+    rules: {
+      'react/react-in-jsx-scope': 'off', // "React must be in scope" 오류 비활성화
+    },
+    settings: {
+      react: {
+        version: 'detect', // 자동으로 설치된 React 버전 감지
       },
     },
-    plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-    },
-    rules: {
-      ...js.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-    },
   },
-]
+]);
